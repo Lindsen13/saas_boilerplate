@@ -1,10 +1,11 @@
-from app import app
 from flask import request, session
-from helpers.database import *
-from helpers.hashpass import *
-from helpers.mailer import *
-from bson import json_util, ObjectId
+from utils.database import db
+from utils.hashpass import getHashed
+from utils.mail import sendmail
+from bson import json_util
+from datetime import datetime, timezone
 import json
+
 
 def checkloginusername():
     username = request.form["username"]
@@ -14,18 +15,24 @@ def checkloginusername():
     else:
         return "User exists"
 
+
 def checkloginpassword():
     username = request.form["username"]
     check = db.users.find_one({"username": username})
     password = request.form["password"]
     hashpassword = getHashed(password)
     if hashpassword == check["password"]:
-        sendmail(subject="Login on Flask Admin Boilerplate", sender="Flask Admin Boilerplate", recipient=check["email"], body="You successfully logged in on Flask Admin Boilerplate")
+        sendmail(
+            subject="Login on Flask Admin Boilerplate",
+            sender="Flask Admin Boilerplate",
+            recipient=check["email"],
+            body="You successfully logged in on Flask Admin Boilerplate",
+        )
         session["username"] = username
         return "correct"
     else:
         return "wrong"
-    
+
 
 def checkusername():
     username = request.form["username"]
@@ -35,13 +42,20 @@ def checkusername():
     else:
         return "Username taken"
 
-def registerUser():
-    fields = [k for k in request.form]                                      
+
+def register_user():
+    fields = [k for k in request.form]
     values = [request.form[k] for k in request.form]
     data = dict(zip(fields, values))
     user_data = json.loads(json_util.dumps(data))
     user_data["password"] = getHashed(user_data["password"])
     user_data["confirmpassword"] = getHashed(user_data["confirmpassword"])
+    user_data["created_at"] = datetime.now(tz=timezone.utc)
     db.users.insert(user_data)
-    sendmail(subject="Registration for Flask Admin Boilerplate", sender="Flask Admin Boilerplate", recipient=user_data["email"], body="You successfully registered on Flask Admin Boilerplate")
+    sendmail(
+        subject="Registration for Flask Admin Boilerplate",
+        sender="Flask Admin Boilerplate",
+        recipient=user_data["email"],
+        body="You successfully registered on Flask Admin Boilerplate",
+    )
     print("Done")
