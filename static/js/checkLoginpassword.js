@@ -8,12 +8,12 @@ $("#login").submit(function () {
   $("#img").show()
   event.preventDefault()
   $.ajax({
-    url: "/checkloginpassword",
+    url: "/check_login_password",
     data: $(this).serialize(),
     type: "POST",
     success: function (response) {
       $("#img").hide()
-      if (response === "correct") {
+      if (response === "true") {
         setTimeout(loginSuccess, 5000)
         swal
           .fire({
@@ -23,7 +23,7 @@ $("#login").submit(function () {
           .then((result) => {
             window.location.href = "/"
           })
-      } else if (response === "wrong") {
+      } else {
         swal
           .fire({
             icon: "error",

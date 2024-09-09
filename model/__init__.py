@@ -7,16 +7,18 @@ from datetime import datetime, timezone
 import json
 
 
-def checkloginusername():
+def check_username_exists() -> bool:
+    """Check if the username exists, return True if it does, False otherwise."""
     username = request.form["username"]
     check = db.users.find_one({"username": username})
-    if check is None:
-        return "No User"
+    if check:
+        return True
     else:
-        return "User exists"
+        return False
 
 
-def checkloginpassword():
+def check_login_password() -> bool:
+    """Check if the password is correct, return True if it is, False otherwise."""
     username = request.form["username"]
     check = db.users.find_one({"username": username})
     password = request.form["password"]
@@ -29,21 +31,12 @@ def checkloginpassword():
             body="You successfully logged in on Flask Admin Boilerplate",
         )
         session["username"] = username
-        return "correct"
-    else:
-        return "wrong"
+        return True
+    return False
 
 
-def checkusername():
-    username = request.form["username"]
-    check = db.users.find_one({"username": username})
-    if check is None:
-        return "Available"
-    else:
-        return "Username taken"
-
-
-def register_user():
+def register_user() -> None:
+    """Register a new user, and send a confirmation email."""
     fields = [k for k in request.form]
     values = [request.form[k] for k in request.form]
     data = dict(zip(fields, values))
