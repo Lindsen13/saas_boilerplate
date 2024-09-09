@@ -1,9 +1,11 @@
 from flask import Flask
 
-from views.blueprints import views_bp
+from views.auth import auth_bp
+from views.base import base_bp
 
 app = Flask(__name__)
-app.register_blueprint(views_bp)
+app.register_blueprint(auth_bp)
+app.register_blueprint(base_bp)
 
 # secret key for user session
 app.secret_key = "ITSASECRET"
