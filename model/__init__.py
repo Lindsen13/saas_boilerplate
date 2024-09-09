@@ -35,7 +35,7 @@ def check_login_password() -> bool:
     return False
 
 
-def register_user() -> None:
+def register_user() -> bool:
     """Register a new user, and send a confirmation email."""
     fields = [k for k in request.form]
     values = [request.form[k] for k in request.form]
@@ -44,11 +44,12 @@ def register_user() -> None:
     user_data["password"] = getHashed(user_data["password"])
     user_data["confirmpassword"] = getHashed(user_data["confirmpassword"])
     user_data["created_at"] = datetime.now(tz=timezone.utc)
-    db.users.insert(user_data)
-    sendmail(
-        subject="Registration for Flask Admin Boilerplate",
-        sender="Flask Admin Boilerplate",
-        recipient=user_data["email"],
-        body="You successfully registered on Flask Admin Boilerplate",
-    )
-    print("Done")
+    if db.users.insert(user_data):
+        sendmail(
+            subject="Registration for Flask Admin Boilerplate",
+            sender="Flask Admin Boilerplate",
+            recipient=user_data["email"],
+            body="You successfully registered on Flask Admin Boilerplate",
+        )
+        return True
+    return False
