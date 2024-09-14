@@ -21,6 +21,12 @@ def check_login_password() -> bool:
     """Check if the password is correct, return True if it is, False otherwise."""
     username = request.form["username"]
     check = db.users.find_one({"username": username})
+
+    if not check:
+        # NOTE: this condition should not really occur, as the
+        # username should be checked before.
+        return False
+
     password = request.form["password"]
     hashpassword = getHashed(password)
     if hashpassword == check["password"]:
