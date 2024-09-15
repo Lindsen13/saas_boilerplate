@@ -1,6 +1,6 @@
 import hashlib
 
-def getHashed(text): #function to get hashed email/password as it is reapeatedly used
+def hash_value(text): #function to get hashed email/password as it is reapeatedly used
     salt = "ITSASECRET" #salt for password security
     hashed = text + salt #salting password
     hashed = hashlib.md5(hashed.encode()) #encrypting with md5 hash

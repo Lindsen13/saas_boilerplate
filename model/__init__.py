@@ -1,6 +1,6 @@
 from flask import request, session
 from utils.database import db
-from utils.hashpass import getHashed
+from utils.hashpass import hash_value
 from utils.mail import sendmail
 from bson import json_util
 from datetime import datetime, timezone
@@ -28,7 +28,7 @@ def check_login_password() -> bool:
         return False
 
     password = request.form["password"]
-    hashpassword = getHashed(password)
+    hashpassword = hash_value(password)
     if hashpassword == check["password"]:
         sendmail(
             subject="Login on Flask Admin Boilerplate",
@@ -47,8 +47,8 @@ def register_user() -> bool:
     values = [request.form[k] for k in request.form]
     data = dict(zip(fields, values))
     user_data = json.loads(json_util.dumps(data))
-    user_data["password"] = getHashed(user_data["password"])
-    user_data["confirmpassword"] = getHashed(user_data["confirmpassword"])
+    user_data["password"] = hash_value(user_data["password"])
+    user_data["confirmpassword"] = hash_value(user_data["confirmpassword"])
     user_data["created_at"] = datetime.now(tz=timezone.utc)
     if db.users.insert(user_data):
         sendmail(

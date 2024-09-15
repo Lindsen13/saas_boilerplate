@@ -1,7 +1,7 @@
 from model import check_login_password, check_username_exists, register_user
 import mock
 import pytest
-from utils.hashpass import getHashed
+from utils.hashpass import hash_value
 
 
 @pytest.mark.parametrize(
@@ -27,8 +27,11 @@ def test_register_user(
             "email": email,
         }
         result = register_user()
-    assert result  # Example assertion
-    assert mock_sendmail.call_count == 1
+
+        assert result  # Example assertion
+        assert mock_sendmail.call_count == 1
+
+        assert mongo_db.users.find_one({"username": username}) is not None
 
 
 @pytest.mark.parametrize(
@@ -64,7 +67,7 @@ def test_check_login_password(username: str, password: str, expected: bool, mong
             [
                 {
                     "username": user["username"],
-                    "password": getHashed(user["password"]),
+                    "password": hash_value(user["password"]),
                     "email": user["email"],
                 }
                 for user in users_in_db
