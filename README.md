@@ -1,6 +1,5 @@
 # [Flask Admin Boilerplate with SB Admin 2](https://flask-admin-boilerplate.herokuapp.com/)
 
-![](screenshot/screenshot.png)
 
 This web application is built using the **[Python Flask Framework](https://palletsprojects.com/p/flask/)** and **[SB Admin 2 Theme (Free version)](https://startbootstrap.com/themes/sb-admin-2/)**
 
@@ -32,12 +31,12 @@ The hosted version of this web application is found [here](https://flask-admin-b
 Follow the steps below to install the application
 
 ```bash
-$ git clone 
+$ git clone
 $ cd flask-admin-boilerplate
 $
 $ virtualenv env
 $ source env/bin/activate
-$ 
+$
 $ # Install requirements
 $ pip install -r requirements.txt
 
