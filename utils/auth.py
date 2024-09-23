@@ -50,6 +50,8 @@ def check_login_password() -> bool:
             body="You successfully logged in on Flask Admin Boilerplate",
         )
         session["username"] = username
+        session['email'] = check["email"]
+        session['name'] = check["name"]
         return True
     return False
 

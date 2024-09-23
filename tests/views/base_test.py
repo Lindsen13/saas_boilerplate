@@ -53,6 +53,18 @@ def test_blank_not_authenticated(client) -> None:
     assert WELCOME_MESSAGE in response.data
 
 
+def test_profile(authenticated_client) -> None:
+    """Test the profile view."""
+    response = authenticated_client.get("/profile")
+    assert b'<h1 class="h3 mb-4 text-gray-800">Profile</h1>' in response.data
+
+
+def test_profile_not_authenticated(client) -> None:
+    """Test the profile view when not authenticated."""
+    response = client.get("/profile", follow_redirects=True)
+    assert WELCOME_MESSAGE in response.data
+
+
 def test_buttons(authenticated_client) -> None:
     """Test the buttons view."""
     response = authenticated_client.get("/buttons")

@@ -24,6 +24,11 @@ def errorpage():
 def blank():
     return render_template("blank.html")
 
+@base_bp.route("/profile", methods=["GET"])
+@login_required
+def profile():
+    return render_template("profile.html")
+
 @base_bp.route("/buttons", methods=["GET"])
 @login_required
 def buttons():

@@ -68,7 +68,9 @@ def test_register_user_password_mismatch(mongo_db):
         ("user_wrong", "password_wrong", False),
     ],
 )
-def test_check_login_password(username: str, password: str, expected: bool, mongo_db):
+def test_check_login_password(
+    username: str, password: str, expected: bool, mongo_db
+):
     """Test check_login_password function."""
     users_in_db = [
         {
@@ -94,6 +96,7 @@ def test_check_login_password(username: str, password: str, expected: bool, mong
                     "username": user["username"],
                     "password": hash_value(user["password"]),
                     "email": user["email"],
+                    "name":"just a name"
                 }
                 for user in users_in_db
             ]
@@ -107,6 +110,8 @@ def test_check_login_password(username: str, password: str, expected: bool, mong
     if expected:
         assert mock_sendmail.call_count == 1
         assert mock_session["username"] == username
+        assert mock_session["email"] is not None
+        assert mock_session["name"] is not None
 
 
 @pytest.mark.parametrize(
