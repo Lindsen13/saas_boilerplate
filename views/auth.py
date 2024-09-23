@@ -2,7 +2,7 @@ from typing import Any
 
 from flask import Blueprint, redirect, render_template, request, session, url_for
 
-from model import check_login_password, check_username_exists, register_user
+from utils.auth import check_login_password, check_username_exists, register_user
 
 auth_bp = Blueprint("auth", __name__)
 
