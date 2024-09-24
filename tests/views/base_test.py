@@ -56,7 +56,12 @@ def test_blank_not_authenticated(client) -> None:
 def test_profile(authenticated_client) -> None:
     """Test the profile view."""
     response = authenticated_client.get("/profile")
-    assert b'<h1 class="h3 mb-4 text-gray-800">Profile</h1>' in response.data
+    with authenticated_client.session_transaction() as session:
+        username = session["username"]
+    assert (
+        f'<h1 class="h3 mb-4 text-gray-800">Hello {username}</h1>'.encode("utf-8")
+        in response.data
+    )
 
 
 def test_profile_not_authenticated(client) -> None:
