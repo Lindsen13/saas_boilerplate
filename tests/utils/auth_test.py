@@ -6,19 +6,56 @@ from utils.auth import (
     check_username_exists,
     login_required,
     register_user,
+    User,
 )
 from utils.hashpass import hash_value
 
 
+def test_user_get_user(mongo_db) -> None:
+    """Test User.get_user method."""
+    expected_username = "test_user"
+    expected_email = "test_email"
+    expected_name = "test_name"
+    expected_password = "test_password"
+    with mock.patch("utils.auth.db", mongo_db):
+        prep_user = User(
+            username=expected_username,
+            email=expected_email,
+            name=expected_name,
+            hashed_password=expected_password,
+        )
+        prep_user.create_user()
+        user = User.get_user(expected_username)
+    assert user.username == expected_username
+    assert user.email == expected_email
+    assert user.name == expected_name
+    assert user.hashed_password == expected_password
+
+
+def test_user_from_dict() -> None:
+    """Test User.from_dict method."""
+    user_dict = {
+        "username": "test_user",
+        "email": "test_email",
+        "name": "test_name",
+        "password": "test_password",
+    }
+    user = User.from_dict(user_dict)
+    assert user.username == user_dict["username"]
+    assert user.email == user_dict["email"]
+    assert user.name == user_dict["name"]
+    assert user.hashed_password == hash_value(user_dict["password"])
+
+
 @pytest.mark.parametrize(
-    "username, password, confirmpassword, email",
+    "username, name, password, confirmpassword, email",
     [
-        ("test_user_1", "test_password_1", "test_password_1", "test_email_1"),
-        ("test_user_2", "test_password_2", "test_password_2", "test_email_2"),
+        ("test_user_1", "user_1", "test_password_1", "test_password_1", "test_email_1"),
+        ("test_user_2", "test_2", "test_password_2", "test_password_2", "test_email_2"),
     ],
 )
 def test_register_user(
-    username: str, password: str, confirmpassword: str, email: str, mongo_db
+    username: str, name: str, password: str, confirmpassword: str, email: str, mongo_db
 ):
     """Test register_user function."""
     with (
@@ -28,6 +65,7 @@ def test_register_user(
     ):
         mock_request.form = {
             "username": username,
+            "name": name,
             "password": password,
             "confirmpassword": confirmpassword,
             "email": email,
@@ -50,6 +88,7 @@ def test_register_user_password_mismatch(mongo_db):
         mock_request.form = {
             "username": "test_user",
             "password": "test_password",
+            "name": "test_name",
             "confirmpassword": "test_password_wrong",
             "email": "test_email",
         }
@@ -68,9 +107,7 @@ def test_register_user_password_mismatch(mongo_db):
         ("user_wrong", "password_wrong", False),
     ],
 )
-def test_check_login_password(
-    username: str, password: str, expected: bool, mongo_db
-):
+def test_check_login_password(username: str, password: str, expected: bool, mongo_db):
     """Test check_login_password function."""
     users_in_db = [
         {
@@ -96,7 +133,7 @@ def test_check_login_password(
                     "username": user["username"],
                     "password": hash_value(user["password"]),
                     "email": user["email"],
-                    "name":"just a name"
+                    "name": "just a name",
                 }
                 for user in users_in_db
             ]
@@ -129,17 +166,23 @@ def test_check_username_exists(username: str, expected: bool, mongo_db):
         mock.patch("utils.auth.request", mock.MagicMock()) as mock_request,
         mock.patch("utils.auth.db", mongo_db) as db,
     ):
-        db.users.insert_many([{"username": user} for user in usernames_in_db])
-        db.users.insert_one(
-            {
-                "username": username,
-            }
+        db.users.insert_many(
+            [
+                {
+                    "username": user,
+                    "name": "test_name",
+                    "email": "test_email",
+                    "password": "test_password",
+                }
+                for user in usernames_in_db
+            ]
         )
+
         mock_request.form = {
             "username": username,
         }
         result = check_username_exists()
-        assert result is not None  # Example assertion
+        assert result == expected
 
 
 def test_login_required():
