@@ -111,3 +111,9 @@ def register_user() -> bool:
         )
         return True
     return False
+
+def update_name_from_user(username: str, new_name: str) -> bool:
+    """Update the name of the user."""
+    db.users.update_one({"username": username}, {"$set": {"name": new_name}})
+    session["name"] = new_name
+    return True

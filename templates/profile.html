@@ -6,12 +6,32 @@
           <!-- Page Heading -->
           <h1 class="h3 mb-4 text-gray-800">Hello {{ session.username }}</h1>
 
-          <!-- Default Card Example -->
+          <!-- Profile section -->
           <div class="card mb-4">
             <div class="card-body">
-              <li>Username: {{ session.username }}</li>
-              <li>Email: {{ session.email }}</li>
-              <li>Name: {{ session.name }}</li>
+              <h5 class="card-title">Profile</h5>
+                <ul class="list-group"></ul>
+                <li class="list-group-item">
+                  <span class="font-weight-bold">Username:</span> {{ session.username }}
+                </li>
+                <li class="list-group-item">
+                  <span class="font-weight-bold">Email:</span>
+                  <span id="email-display">{{ session.email }}</span>
+                </li>
+                <li class="list-group-item">
+                  <span class="font-weight-bold">Name:</span>
+                  <span id="name-display">{{ session.name }}</span>
+                  <input type="text" id="name-input" class="form-control d-none" value="{{ session.name }}">
+                  <button id="edit-button-name" class="btn btn-sm btn-link" onclick="toggleEditName()">Edit</button>
+                  <button id="save-button-name" class="btn btn-sm btn-link d-none" onclick="saveName()">Save</button>
+                </li>
+                <li class="list-group-item">
+                  <button class="btn btn-sm btn-link">Reset Password</button>
+                </li>
+              </ul>
+              <div class="mt-3">
+                <img src="https://api.dicebear.com/9.x/dylan/svg" alt="Avatar" class="img-fluid rounded-circle" style="max-width: 100px;">
+              </div>
             </div>
           </div>
 
@@ -51,6 +71,9 @@
 
   <!-- Custom scripts for all pages-->
   <script src="static/js/sb-admin-2.min.js"></script>
+
+  <!-- Custom script to edit email and name -->
+  <script src="../static/js/editProfileElements.js"></script>
 
 </body>
 

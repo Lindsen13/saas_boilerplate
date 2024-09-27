@@ -6,6 +6,7 @@ from utils.auth import (
     check_username_exists,
     login_required,
     register_user,
+    update_name_from_user,
     User,
 )
 from utils.hashpass import hash_value
@@ -210,3 +211,30 @@ def test_login_required_redirect():
     ):
         assert login_required(protected_resource)() == "redirected"
         assert mock_redirect.assert_called_once
+
+
+def test_update_name_from_user(mongo_db) -> None:
+    """Test update_name_from_user function."""
+    expected_username = "test_user"
+    expected_name = "test_user"
+    with (
+        mock.patch("utils.auth.session", {}) as mock_session,
+        mock.patch("utils.auth.db", mongo_db) as db,
+    ):
+        db.users.insert_one(
+            {
+                "username": expected_username,
+                "password": "password",
+                "email": "email",
+                "name": "just a name",
+            }
+        )
+        mock_session["username"] = expected_name
+        result = update_name_from_user(
+            username=expected_username, new_name=expected_name
+        )
+
+        got = db.users.find_one({"username": expected_username})
+
+        assert result
+        assert got["name"] == expected_name

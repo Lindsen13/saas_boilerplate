@@ -2,7 +2,13 @@ from typing import Any
 
 from flask import Blueprint, redirect, render_template, request, session, url_for
 
-from utils.auth import check_login_password, check_username_exists, register_user
+from utils.auth import (
+    check_login_password,
+    check_username_exists,
+    register_user,
+    update_name_from_user,
+    login_required,
+)
 
 auth_bp = Blueprint("auth", __name__)
 
@@ -46,3 +52,14 @@ def check_user_password() -> str:
 def forgot_password() -> Any:
     """Forgot password route."""
     return render_template("forgot-password.html")
+
+
+@auth_bp.route("/update_name", methods=["POST"])
+@login_required
+def update_name() -> Any:
+    """Update name route."""
+    if update_name_from_user(
+        username=session.get("username"), new_name=request.args.get("name")
+    ):
+        return "true"
+    return "false"

@@ -58,3 +58,14 @@ def test_forgot_password(client):
     assert (
         b'<h1 class="h4 text-gray-900 mb-2">Forgot Your Password?</h1>' in response.data
     )
+
+
+def test_update_name(authenticated_client):
+    """test the update_name view."""
+    updated_name = "NewName"
+    with mock.patch(
+        "views.auth.update_name_from_user", mock.MagicMock()
+    ) as mock_update_name_from_user:
+        response = authenticated_client.post(f"/update_name?name={updated_name}")
+    assert response.data == b"true"
+    assert mock_update_name_from_user.assert_called_once
